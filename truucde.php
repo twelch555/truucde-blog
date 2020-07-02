@@ -13,7 +13,7 @@
  * @package TruUcde
  */
 
-namespace TruUcde;
+namespace TruUcdeBlog;
 
 use \WP_Error; // need from WordPress to create empty error block below.
 
@@ -46,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	 * Hooking into WordPress
 	 */
 function truucde_init() {
-	add_filter( 'wpmu_validate_user_signup', 'TruUcde\on_loaded', 10 );
+	add_filter( 'wpmu_validate_user_signup', 'TruUcdeBlog\on_loaded', 10 );
 };
 
 	/**

@@ -23,20 +23,9 @@ require_once $_tests_dir . '/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( dirname( dirname( __FILE__ ) ) ) . '/truucde.php';
+	require dirname( dirname( __FILE__ ) ) . '/truucde-blog.php';
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 // Start up the WP testing environment.
 require $_tests_dir . '/includes/bootstrap.php';
-
-// Add test utility functions.
-require_once 'util/class-util.php';
-
-$current_user = new WP_User( 1 );
-$current_user->set_role( 'administrator' );
-grant_super_admin(1);
-
-echo PHP_EOL;
-echo 'Using WordPress core : ' . ABSPATH . PHP_EOL;
-echo PHP_EOL;

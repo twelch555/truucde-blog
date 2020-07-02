@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vendor/bin/phpunit -c phpunit_integration.xml -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
+         bootstrap="./tests/integrationTests/bootstrap_integration.php"
+         backupGlobals="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+>
+
+    <php>
+        <const name="WP_TESTS_MULTISITE" value="1" />
+    </php>
+
+    <testsuites>
+        <testsuite name="truucde-int">
+            <directory>tests/integrationTests/tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <file>truucde.php</file>
+            <exclude>
+                <directory>tests/integrationTests/util</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-html" target="./tests/integrationTests/coverage" showUncoveredFiles="true"/>
+    </logging>
+</phpunit>

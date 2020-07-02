@@ -1,2 +1,4 @@
 /vendor/
 /.idea/
+/tests/integrationTests/coverage/
+/tests/unitTests/coverage/
