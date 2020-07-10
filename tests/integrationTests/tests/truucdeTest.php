@@ -87,25 +87,49 @@ class MsTruUcdeTest extends WP_UnitTestCase {
 		global $current_user;
 		global $current_blog;
 
-		// Blog 2
+		// Blog 2.
 		switch_to_blog( $this->blog_2 );
 		set_current_screen( 'user_new.php' );
 
+		// add_new_users option unchecked.
+		update_network_option( get_current_network_id(), 'add_new_users', 0 );
+		
 		wp_set_current_user( $this->site2_admin );
-		$this->assertTrue( user_can( $this->site2_admin, 'promote_users' ) );
+		$this->assertFalse( user_can( $this->site2_admin, 'create_users' ) );
 
 		wp_set_current_user( $this->site3_admin );
-		$this->assertFalse( user_can( $this->site3_admin, 'promote_users' ) );
+		$this->assertFalse( user_can( $this->site3_admin, 'create_users' ) );
+		
+		// add_new_users option checked.
+		update_network_option( get_current_network_id(), 'add_new_users', 1 );
+		
+		wp_set_current_user( $this->site2_admin );
+		$this->assertTrue( user_can( $this->site2_admin, 'create_users' ) );
+		
+		wp_set_current_user( $this->site3_admin );
+		$this->assertFalse( user_can( $this->site3_admin, 'create_users' ) );
 
-		// Blog 3
+		// Blog 3.
 		switch_to_blog( $this->blog_3 );
 		set_current_screen( 'user_new.php' );
-
+		
+		// add_new_users option unchecked.
+		update_network_option( get_current_network_id(), 'add_new_users', 0 );
+		
 		wp_set_current_user( $this->site3_admin );
-		$this->assertTrue( user_can( $this->site3_admin, 'promote_users' ) );
+		$this->assertFalse( user_can( $this->site3_admin, 'create_users' ) );
 
 		wp_set_current_user( $this->site2_admin );
-		$this->assertFalse( user_can( $this->site2_admin, 'promote_users' ) );
+		$this->assertFalse( user_can( $this->site2_admin, 'create_users' ) );
+		
+		// add_new_users option checked.
+		update_network_option( get_current_network_id(), 'add_new_users', 1 );
+		
+		wp_set_current_user( $this->site3_admin );
+		$this->assertTrue( user_can( $this->site3_admin, 'create_users' ) );
+		
+		wp_set_current_user( $this->site2_admin );
+		$this->assertFalse( user_can( $this->site2_admin, 'create_users' ) );
 	}
 
 
@@ -115,6 +139,7 @@ class MsTruUcdeTest extends WP_UnitTestCase {
 	 * for blogs 2 and 3.
 	 */
 	public function test_user_can_add() {
+		update_network_option( get_current_network_id(), 'add_new_users', 1 );
 
 		// No user logged in
 		$this->assertSame( 0, get_current_user_id() );
@@ -160,6 +185,7 @@ class MsTruUcdeTest extends WP_UnitTestCase {
 	
 	// White list domain
 	public function test_white_list() {
+		update_network_option( get_current_network_id(), 'add_new_users', 1 );
 		switch_to_blog( $this->blog_2 );
 		
 		// super admin
@@ -184,6 +210,7 @@ class MsTruUcdeTest extends WP_UnitTestCase {
 	
 	// Black list domain
 	public function test_black_list() {
+		update_network_option( get_current_network_id(), 'add_new_users', 1 );
 		switch_to_blog( $this->blog_2 );
 		
 		// super admin
@@ -209,6 +236,7 @@ class MsTruUcdeTest extends WP_UnitTestCase {
 	
 	// Neither white or black
 	public function test_neither_list() {
+		update_network_option( get_current_network_id(), 'add_new_users', 1 );
 		switch_to_blog( $this->blog_2 );
 		
 		// super admin
@@ -233,6 +261,7 @@ class MsTruUcdeTest extends WP_UnitTestCase {
 	
 	// Invalid email address: target code, other message
 	public function test_invalid_email() {
+		update_network_option( get_current_network_id(), 'add_new_users', 1 );
 		switch_to_blog( $this->blog_2 );
 		
 		// super admin
@@ -261,13 +290,13 @@ class MsTruUcdeTest extends WP_UnitTestCase {
 	
 	// Invalid user name
 	public function test_invalid_username() {
+		update_network_option( get_current_network_id(), 'add_new_users', 1 );
 		switch_to_blog( $this->blog_2 );
 		
 		// super admin
 		wp_set_current_user( 1 );
 		
 		$result = wpmu_validate_user_signup( 'white=list', 'whitelist@whitelist.com' );
-		print_r($result);
 		$this->assertContains( $this->Another_code, $result['errors']->get_error_codes() );
 		$this->assertContains( $this->Another_msg, $result['errors']->get_error_messages( $this->Another_code ) );
 		

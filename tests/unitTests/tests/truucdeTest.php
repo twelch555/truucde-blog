@@ -15,7 +15,6 @@ use \WP_Error; // need to create empty error objects.
  * TruUcde test case
  */
 class TruUcdeTest extends \WP_Mock\Tools\TestCase {
-// TODO: eliminate need for WP_ERROR object
 	/*
 	 * Define all the things
 	 */
@@ -49,7 +48,7 @@ class TruUcdeTest extends \WP_Mock\Tools\TestCase {
 		// ensure the filter is added.
 		\WP_Mock::expectFilterAdded(
 			'wpmu_validate_user_signup',
-			'TruUcde\on_loaded'
+			'TruUcdeBlog\on_loaded'
 		);
 		// Now test the init hook method of the class to check if the filter is added.
 		truucde_init();
@@ -74,7 +73,7 @@ class TruUcdeTest extends \WP_Mock\Tools\TestCase {
 			'current_user_can',
 			array(
 				'times'  => 1,
-				'args'   => array( 'promote_users' ),
+				'args'   => array( 'create_users' ),
 				'return' => true,
 			)
 		);
@@ -102,7 +101,7 @@ class TruUcdeTest extends \WP_Mock\Tools\TestCase {
 			'current_user_can',
 			array(
 				'times'  => 1,
-				'args'   => array( 'promote_users' ),
+				'args'   => array( 'create_users' ),
 				'return' => false,
 			)
 		);
@@ -130,7 +129,7 @@ class TruUcdeTest extends \WP_Mock\Tools\TestCase {
 			'current_user_can',
 			array(
 				'times'  => 0,
-				'args'   => array( 'promote_users' ),
+				'args'   => array( 'create_users' ),
 				'return' => true,
 			)
 		);
@@ -157,7 +156,7 @@ class TruUcdeTest extends \WP_Mock\Tools\TestCase {
 			'current_user_can',
 			array(
 				'times'  => 0,
-				'args'   => array( 'promote_users' ),
+				'args'   => array( 'create_users' ),
 				'return' => false,
 			)
 		);
@@ -224,8 +223,8 @@ class TruUcdeTest extends \WP_Mock\Tools\TestCase {
 	 * Testing if on load conditions failure returns
 	 * original object
 	 */
-	// TODO: other bail tests
-	public function test_on_load_conditions_bail() {
+	// user_can_add() return true, e_needs_processing return false
+	public function test_on_load_conditions_bail_utef() {
 
 		\WP_Mock::userFunction(
 			'is_user_logged_in',
@@ -239,7 +238,7 @@ class TruUcdeTest extends \WP_Mock\Tools\TestCase {
 			'current_user_can',
 			array(
 				'times'  => 1,
-				'args'   => array( 'promote_users' ),
+				'args'   => array( 'create_users' ),
 				'return' => true,
 			)
 		);
@@ -255,6 +254,82 @@ class TruUcdeTest extends \WP_Mock\Tools\TestCase {
 
 		$this->assertEquals( $orig_result, $result );
 
+	}
+	
+	/**
+	 * Testing if on load conditions failure returns
+	 * original object
+	 */
+	// user_can_add() return false, e_needs_processing return true
+	public function test_on_load_conditions_bail_ufet() {
+		
+		\WP_Mock::userFunction(
+			'is_user_logged_in',
+			array(
+				'times'  => 1,
+				'return' => true,
+			)
+		);
+		
+		\WP_Mock::userFunction(
+			'current_user_can',
+			array(
+				'times'  => 1,
+				'args'   => array( 'create_users' ),
+				'return' => false,
+			)
+		);
+		
+		$truucde_error = new WP_Error();
+		
+		$truucde_error->add( $this->Another_code, $this->Another_msg, $this->Another_data );
+		$truucde_error->add( $this->Target_code, $this->Black_msg, $this->Target_data );
+		$truucde_error->add( $this->Target_code, $this->White_msg, $this->Target_data );
+		
+		$orig_result           = array();
+		$orig_result['errors'] = $truucde_error;
+		
+		$result = on_loaded( $orig_result );
+		
+		$this->assertEquals( $orig_result, $result );
+		
+	}
+	
+	/**
+	 * Testing if on load conditions failure returns
+	 * original object
+	 */
+	// user_can_add() return true, e_needs_processing return false
+	public function test_on_load_conditions_bail_ufef() {
+		
+		\WP_Mock::userFunction(
+			'is_user_logged_in',
+			array(
+				'times'  => 1,
+				'return' => true,
+			)
+		);
+		
+		\WP_Mock::userFunction(
+			'current_user_can',
+			array(
+				'times'  => 1,
+				'args'   => array( 'create_users' ),
+				'return' => false,
+			)
+		);
+		
+		$truucde_error = new WP_Error();
+		
+		$truucde_error->add( $this->Another_code, $this->Another_msg, $this->Another_data );
+		
+		$orig_result           = array();
+		$orig_result['errors'] = $truucde_error;
+		
+		$result = on_loaded( $orig_result );
+		
+		$this->assertEquals( $orig_result, $result );
+		
 	}
 
 	/**
@@ -274,7 +349,7 @@ class TruUcdeTest extends \WP_Mock\Tools\TestCase {
 			'current_user_can',
 			array(
 				'times'  => 1,
-				'args'   => array( 'promote_users' ),
+				'args'   => array( 'create_users' ),
 				'return' => true,
 			)
 		);
